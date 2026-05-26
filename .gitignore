@@ -1,5 +1,7 @@
 .env
 node_modules/
 memory/kuzu_db/
+memory/__pycache__/
 logs/
 *.log
+*.pyc
