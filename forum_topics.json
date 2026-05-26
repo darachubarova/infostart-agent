@@ -1,0 +1,109 @@
+{
+  "scanned_at": "2026-05-27",
+  "forum": "https://forum.infostart.ru/forum9/",
+  "pages_scanned": [1, 2, 3],
+  "topics_with_0_3_replies": [
+    {
+      "url": "https://forum.infostart.ru/forum9/topic339710/",
+      "title": "Ошибка: Session not found при подключении Claude Desktop к MCP-серверу Vanessa Automation",
+      "replies": 1,
+      "author": "impextr",
+      "date": "2026-05-15",
+      "slug": "mcp-vanessa-claude-session",
+      "selected_for_article": true,
+      "tech_tags": ["MCP", "Vanessa Automation", "Claude Desktop", "SSE", "интеграция"]
+    },
+    {
+      "url": "https://forum.infostart.ru/forum9/topic340074/",
+      "title": "Проблема с открытием Word: документ открывается и сразу закрывается",
+      "replies": 0,
+      "author": "PapaKruk222",
+      "date": "2026-05-20",
+      "slug": "word-com-open-close-instantly",
+      "selected_for_article": true,
+      "tech_tags": ["COM", "Word", "автоматизация", "1С 8.3"]
+    },
+    {
+      "url": "https://forum.infostart.ru/forum9/topic339926/",
+      "title": "1С 3.0: синхронизация и загрузка товаров в хранилище Wildberries",
+      "replies": 0,
+      "author": "bvb",
+      "date": "2026-05-19",
+      "slug": "wildberries-product-sync",
+      "selected_for_article": true,
+      "tech_tags": ["Wildberries", "маркетплейс", "синхронизация", "REST API", "1С УТ"]
+    },
+    {
+      "url": "https://forum.infostart.ru/forum9/topic340243/",
+      "title": "Как загрузить изображение в ячейку Google Sheets из 1С",
+      "replies": 1,
+      "author": "El_Ninio",
+      "date": "2026-05-21",
+      "slug": "google-sheets-image-from-1c",
+      "selected_for_article": true,
+      "tech_tags": ["Google Sheets", "Drive API", "OAuth2", "HTTP-запросы", "интеграция"]
+    },
+    {
+      "url": "https://forum.infostart.ru/forum9/topic339677/",
+      "title": "Как правильно организовать резервное копирование в условиях высоконагруженной базы 1С",
+      "replies": 2,
+      "author": "skela23",
+      "date": "2026-05-09",
+      "slug": "highload-1c-backup",
+      "selected_for_article": true,
+      "tech_tags": ["резервное копирование", "высокая нагрузка", "SQL Server", "инфраструктура"]
+    },
+    {
+      "url": "https://forum.infostart.ru/forum9/topic340284/",
+      "title": "Вопрос по запросам с доп. профессиональными программами",
+      "replies": 2,
+      "author": "RVDVuQUw",
+      "date": "2026-05-26",
+      "slug": "query-result-structure",
+      "selected_for_article": false,
+      "tech_tags": ["запросы", "1С 8.3"]
+    },
+    {
+      "url": "https://forum.infostart.ru/forum9/topic339715/",
+      "title": "Платёж записывается несколько раз вместо одного",
+      "replies": 2,
+      "author": "Aleksey_Abramov",
+      "date": "2026-05-07",
+      "slug": "payment-duplicate-writes",
+      "selected_for_article": false,
+      "tech_tags": ["проводки", "платежи", "дубли"]
+    },
+    {
+      "url": "https://forum.infostart.ru/forum9/topic339853/",
+      "title": "Ошибка в разделе функциональности 1С:ERP 2.1",
+      "replies": 0,
+      "author": "Sasha_1C",
+      "date": "2026-05-13",
+      "slug": "erp-functionality-error",
+      "selected_for_article": false,
+      "tech_tags": ["1С ERP", "функциональность"]
+    },
+    {
+      "url": "https://forum.infostart.ru/forum9/topic339716/",
+      "title": "Асинхронный вызов методов в классовом интерфейсе",
+      "replies": 0,
+      "author": "myztix",
+      "date": "2026-05-07",
+      "slug": "async-class-interface",
+      "selected_for_article": false,
+      "tech_tags": ["асинхронность", "ООП", "1С 8.3"]
+    },
+    {
+      "url": "https://forum.infostart.ru/forum9/topic339771/",
+      "title": "Проблема с параметрами документов в конфигурации 1С",
+      "replies": 0,
+      "author": "unknown",
+      "date": "2026-05-10",
+      "slug": "document-params-config",
+      "selected_for_article": false,
+      "tech_tags": ["параметры", "документы", "конфигурация"]
+    }
+  ],
+  "selected_for_articles": 5,
+  "total_found_with_0_3_replies": 10
+}

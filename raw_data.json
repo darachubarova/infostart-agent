@@ -1,0 +1,197 @@
+{
+  "session": "2026-05-27",
+  "topic": "разработка и инструменты",
+  "source": "infostart.ru/1c/articles/?period=30&sort=property_comments",
+  "pages_fetched": 5,
+  "articles_total_on_platform": 9612,
+  "articles_relevant": [
+    {
+      "title": "ГИС ЖКХО + 1С: Конфигуратор 2.3 + ОДН квант",
+      "url": "https://infostart.ru/1c/articles/2612448/",
+      "comments": 436,
+      "subcategory": "регуляторика_гис",
+      "fetched": true,
+      "notes": "Интеграция 1С:Розница 2.3 с ГИС ЖКХ. Проблемы: ошибка 514 (таймаут ЦОД), несовместимость версий, истечение сертификатов X-API-KEY с 1 июня 2026. Требование: cdnCodesCheckTimeout в config_ук.yml поднять до 2500. Тон: взаимопомощь на фоне отсутствия официальной поддержки."
+    },
+    {
+      "title": "OneBase — open-source хранилище с 1С-разработкой",
+      "url": "https://infostart.ru/1c/articles/2694204/",
+      "comments": 158,
+      "subcategory": "интеграция_данные",
+      "fetched": false,
+      "notes": "Open-source решение для хранения и обмена данными. Высокий интерес."
+    },
+    {
+      "title": "Разбор обновления 11.5 для ГИС (аналитика для перерабатывающих)",
+      "url": "https://infostart.ru/1c/articles/2574517/",
+      "comments": 49,
+      "subcategory": "регуляторика_гис",
+      "fetched": true,
+      "notes": "Обновление 11.5 для интеграции с ГИС. Боли: нет плана миграции для производственных предприятий, 'JSON и HTTP вместо полноценного API — это половина решения', неясность требований 2026 года. Цитата: 'как в 2008 году с версией 7.7 — обновляются постоянно, но суть не меняется'."
+    },
+    {
+      "title": "OpenStreetMap для геолокации и маршрутизации в 1С",
+      "url": "https://infostart.ru/1c/articles/2088122/",
+      "comments": 39,
+      "subcategory": "интеграция_веб",
+      "fetched": false
+    },
+    {
+      "title": "Файловый обмен 1С 2.1: экспорт и сохранение",
+      "url": "https://infostart.ru/1c/articles/2131229/",
+      "comments": 39,
+      "subcategory": "интеграция_данные",
+      "fetched": false
+    },
+    {
+      "title": "Интеграция 1С с ИИ через MCP",
+      "url": "https://infostart.ru/1c/articles/2514331/",
+      "comments": 35,
+      "subcategory": "интеграция_api",
+      "fetched": false
+    },
+    {
+      "title": "Kafka: организация open-source подсистем обмена в 1С",
+      "url": "https://infostart.ru/1c/articles/2491990/",
+      "comments": 31,
+      "subcategory": "интеграция_протоколы",
+      "fetched": false,
+      "notes": "Асинхронный обмен через Kafka. Техническая дискуссия о consumer groups и throughput."
+    },
+    {
+      "title": "Видеозаписи обменов: сохранение транспорта",
+      "url": "https://infostart.ru/1c/articles/2142938/",
+      "comments": 27,
+      "subcategory": "интеграция_данные",
+      "fetched": false
+    },
+    {
+      "title": "Enterprise Data (ОД3): новый формат обмена по заказам",
+      "url": "https://infostart.ru/1c/articles/2632740/",
+      "comments": 25,
+      "subcategory": "интеграция_данные",
+      "fetched": false
+    },
+    {
+      "title": "Сравнение 1С:ЯДРО и DATAREON",
+      "url": "https://infostart.ru/1c/articles/2159148/",
+      "comments": 23,
+      "subcategory": "интеграция_данные",
+      "fetched": false
+    },
+    {
+      "title": "Как перенести данные в 70+ компаний в 1С",
+      "url": "https://infostart.ru/1c/articles/2662915/",
+      "comments": 18,
+      "subcategory": "интеграция_данные",
+      "fetched": false
+    },
+    {
+      "title": "Форматы AVRO и Protobuf для интеграции в 1С",
+      "url": "https://infostart.ru/1c/articles/2576538/",
+      "comments": 14,
+      "subcategory": "интеграция_протоколы",
+      "fetched": false
+    },
+    {
+      "title": "Веб-сокеты для обмена данными в реальном времени",
+      "url": "https://infostart.ru/1c/articles/2293957/",
+      "comments": 14,
+      "subcategory": "интеграция_протоколы",
+      "fetched": false
+    },
+    {
+      "title": "Экспортирование XDTO-данных EnterpriseData",
+      "url": "https://infostart.ru/1c/articles/2632740/",
+      "comments": 13,
+      "subcategory": "интеграция_данные",
+      "fetched": false
+    },
+    {
+      "title": "Чат-бот в 1С: поиск ответов с Z AI и Claude",
+      "url": "https://infostart.ru/1c/articles/2644433/",
+      "comments": 12,
+      "subcategory": "интеграция_api",
+      "fetched": false
+    },
+    {
+      "title": "2026: ключевые изменения для 1С по данным ГИС",
+      "url": "https://infostart.ru/1c/articles/2652003/",
+      "comments": 10,
+      "subcategory": "регуляторика_гис",
+      "fetched": false,
+      "notes": "Изменения требований отчётности через ОФД в 2026 году."
+    },
+    {
+      "title": "Работа с REST API и внешними сервисами в 1С",
+      "url": "https://infostart.ru/1c/articles/2683808/",
+      "comments": 10,
+      "subcategory": "интеграция_api",
+      "fetched": false
+    },
+    {
+      "title": "Интеграция производства и МЭС для планирования",
+      "url": "https://infostart.ru/1c/articles/2682063/",
+      "comments": 9,
+      "subcategory": "интеграция_данные",
+      "fetched": false
+    },
+    {
+      "title": "Платформа Kafka 2.0 для 1С",
+      "url": "https://infostart.ru/1c/articles/2491990/",
+      "comments": 5,
+      "subcategory": "интеграция_протоколы",
+      "fetched": false
+    },
+    {
+      "title": "Интеграция с сервисами Yandex API",
+      "url": "https://infostart.ru/1c/articles/2170218/",
+      "comments": 5,
+      "subcategory": "интеграция_api",
+      "fetched": false
+    },
+    {
+      "title": "WebSocket: решение проблем синхронизации данных",
+      "url": "https://infostart.ru/1c/articles/2670603/",
+      "comments": 5,
+      "subcategory": "интеграция_протоколы",
+      "fetched": false
+    },
+    {
+      "title": "Выгрузка данных в ЕГАИС (часть 2)",
+      "url": "https://infostart.ru/1c/articles/2689471/",
+      "comments": 4,
+      "subcategory": "регуляторика_егаис",
+      "fetched": true,
+      "notes": "Интеграция 1С:ERP с ЕГАИС. Data Matrix, штрих-коды, маркировка алкоголя. Комментариев нет — тема 'молчащая' несмотря на боль."
+    },
+    {
+      "title": "Система управления 1С:ИТС для специалистов (ЭДО)",
+      "url": "https://infostart.ru/1c/articles/2652003/",
+      "comments": 3,
+      "subcategory": "регуляторика_эдо",
+      "fetched": false
+    },
+    {
+      "title": "1С и OAuth2, OpenID Connect",
+      "url": "https://infostart.ru/1c/articles/2671899/",
+      "comments": 1,
+      "subcategory": "интеграция_api",
+      "fetched": false
+    },
+    {
+      "title": "ЭДО для малых компаний: практические решения",
+      "url": "https://infostart.ru/1c/articles/2659184/",
+      "comments": 0,
+      "subcategory": "регуляторика_эдо",
+      "fetched": false
+    },
+    {
+      "title": "Интеграция WhatsApp ↔ VK для CRM на Node.js",
+      "url": "https://infostart.ru/1c/articles/2697043/",
+      "comments": 0,
+      "subcategory": "интеграция_api",
+      "fetched": false
+    }
+  ]
+}

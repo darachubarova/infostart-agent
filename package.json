@@ -1,0 +1,21 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file=.env --import tsx agent.ts",
+    "trends": "cross-env MODE=trends node --env-file=.env --import tsx agent.ts",
+    "trends:0": "cross-env MODE=trends TOPIC_INDEX=0 node --env-file=.env --import tsx agent.ts",
+    "trends:1": "cross-env MODE=trends TOPIC_INDEX=1 node --env-file=.env --import tsx agent.ts",
+    "trends:2": "cross-env MODE=trends TOPIC_INDEX=2 node --env-file=.env --import tsx agent.ts",
+    "forum": "cross-env MODE=forum node --env-file=.env --import tsx agent.ts",
+    "forum:dev": "cross-env MODE=forum FORUM_SECTION=forum9 node --env-file=.env --import tsx agent.ts",
+    "forum:erp": "cross-env MODE=forum FORUM_SECTION=forum8 node --env-file=.env --import tsx agent.ts",
+    "forum:integration": "cross-env MODE=forum FORUM_SECTION=forum63 node --env-file=.env --import tsx agent.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.150",
+    "tsx": "^4.22.3"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0"
+  }
+}
