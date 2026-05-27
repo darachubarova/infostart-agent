@@ -11,6 +11,20 @@ CANONICAL_BASE = "https://darachubarova.github.io/infostart-agent/posts/"
 POSTED_FILE = Path("infolimp_posted.json")
 POSTS_DIR = Path("site/content/posts")
 
+_TRANSLIT_MAP = {
+    'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo','ж':'zh','з':'z',
+    'и':'i','й':'j','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r',
+    'с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh',
+    'щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya',
+}
+_TRANSLIT_MAP.update({k.upper(): v.capitalize() for k, v in _TRANSLIT_MAP.items()})
+
+def slugify(text: str) -> str:
+    text = "".join(_TRANSLIT_MAP.get(c, c) for c in text)
+    text = re.sub(r"[^a-zA-Z0-9_-]", "_", text)
+    text = re.sub(r"_+", "_", text).strip("_")
+    return text.lower()
+
 
 def load_posted():
     if POSTED_FILE.exists():
@@ -38,6 +52,7 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
 
 
 def post_article(slug: str, fm: dict, body: str) -> bool:
+    slug = slugify(slug)
     canonical = f"{CANONICAL_BASE}{slug}/"
     tags_raw = fm.get("tags", "['1С']")
     tags = re.findall(r"'([^']+)'", tags_raw)
