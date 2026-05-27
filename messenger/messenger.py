@@ -21,9 +21,12 @@ FROM_ID       = "infostart-agent"
 TO_ID         = "infolimp"
 INFOLIMP_API  = os.environ.get("INFOLIMP_API_URL", "https://infolimp.ru/api/articles")
 INFOLIMP_KEY  = os.environ.get("INFOLIMP_API_KEY", "")
-MESSENGER_API = "https://infolimp.ru/api/messenger"
-INBOX_API     = f"{MESSENGER_API}/inbox"
-SEND_API      = f"{MESSENGER_API}/send"
+MESSENGER_API  = "https://infolimp.ru/api/messenger"
+INBOX_API      = f"{MESSENGER_API}/inbox"
+SEND_API       = f"{MESSENGER_API}/send"
+ARTICLES_API   = os.environ.get("INFOLIMP_API_URL", "https://infolimp.ru/api/articles")
+ARTICLES_PAGE  = "https://infolimp.ru/articles/"
+REPLY_PREFIX   = "reply-infostart-"  # slug prefix for infolimp.ru -> us replies
 
 
 def _canon(payload: dict) -> str:
@@ -201,6 +204,125 @@ def send_via_rest(text: str, channel: str = "general", msg_type: str = "info",
         return None
 
 
+def send_via_articles(text: str, channel: str = "general", msg_type: str = "info",
+                      payload: dict = None):
+    """Отправить сообщение через articles API (всегда работает, не требует нового эндпоинта)."""
+    import urllib.request, urllib.error
+    from datetime import date
+    if not INFOLIMP_KEY:
+        print("INFOLIMP_API_KEY не задан")
+        return None
+
+    ts   = datetime.now(timezone.utc).isoformat()
+    body = {
+        "from": FROM_ID, "to": TO_ID, "channel": channel,
+        "type": msg_type, "text": text,
+        "payload": payload or {}, "created_at": ts,
+    }
+    sig = sign(body)
+
+    msg_id = f"msg_{uuid.uuid4().hex[:12]}"
+    slug   = f"msg-from-infostart-{msg_id}"
+
+    content = (
+        f"channel:{channel} type:{msg_type}\n\n"
+        f"{text}\n\n"
+        f"HMAC:{sig}\ncreated_at:{ts}"
+    )
+    article = {
+        "title":         f"[MSG] {text[:60]}",
+        "slug":          slug,
+        "content":       content,
+        "date":          str(date.today()),
+        "tags":          ["messenger", channel],
+        "category":      "messenger",
+        "canonical_url": "https://darachubarova.github.io/infostart-agent/",
+        "author":        FROM_ID,
+    }
+    data = json.dumps(article, ensure_ascii=False).encode("utf-8")
+    req  = urllib.request.Request(
+        ARTICLES_API, data=data,
+        headers={"Authorization": f"Bearer {INFOLIMP_KEY}",
+                 "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read())
+            print(f"Отправлено (articles): {msg_id}")
+            print(f"  URL: {result.get('url', '?')}")
+            return msg_id
+    except urllib.error.HTTPError as e:
+        print(f"Ошибка articles send: HTTP {e.code} — {e.read().decode()[:200]}")
+        return None
+    except Exception as e:
+        print(f"Articles send ошибка: {e}")
+        return None
+
+
+def read_from_articles_scrape(unread_only: bool = False):
+    """Читаем ответы infolimp.ru — статьи с slug 'reply-infostart-*' на их сайте."""
+    import urllib.request, urllib.error, re
+    read_log  = Path("messenger_read_articles.json")
+    read_ids  = set(json.loads(read_log.read_text(encoding="utf-8"))) \
+                if read_log.exists() else set()
+
+    try:
+        req = urllib.request.Request(ARTICLES_PAGE,
+                                     headers={"User-Agent": "infostart-agent/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            html = resp.read().decode("utf-8", errors="replace")
+    except Exception as e:
+        print(f"Scrape ошибка: {e}")
+        return None  # None = ошибка
+
+    slugs = re.findall(r"/articles/(" + re.escape(REPLY_PREFIX) + r"[a-z0-9_-]+)\.html", html)
+    if not slugs:
+        print("Нет ответов от infolimp.ru.")
+        return []
+
+    messages = []
+    for slug in slugs:
+        if unread_only and slug in read_ids:
+            continue
+        try:
+            req2 = urllib.request.Request(
+                f"{ARTICLES_PAGE}{slug}.html",
+                headers={"User-Agent": "infostart-agent/1.0"}
+            )
+            with urllib.request.urlopen(req2, timeout=10) as resp2:
+                page = resp2.read().decode("utf-8", errors="replace")
+            text_match = re.search(r"<article[^>]*>(.*?)</article>", page, re.DOTALL)
+            raw  = re.sub("<[^>]+>", " ", text_match.group(1)) if text_match else page
+            text = re.sub(r"\s+", " ", raw).strip()
+
+            # Extract HMAC and verify
+            sig_match = re.search(r"HMAC:([a-f0-9]{64})", text)
+            ts_match  = re.search(r"created_at:([\d\-T:.+Z]+)", text)
+            sig = sig_match.group(1) if sig_match else ""
+            ts  = ts_match.group(1)  if ts_match  else ""
+
+            env = {"from": TO_ID, "to": FROM_ID, "channel": "general",
+                   "type": "reply", "text": text[:300],
+                   "payload": {}, "created_at": ts}
+            valid  = verify(env, sig) if sig else False
+            status = "[OK]" if valid else "[подпись не проверена]"
+
+            print(f"\n[{ts[:16]}] infolimp -> infostart-agent [scrape] {status}")
+            print(f"  {text[:200]}")
+
+            messages.append({"id": slug, "from": TO_ID, "text": text,
+                             "created_at": ts, "signature": sig})
+            read_ids.add(slug)
+        except Exception as e:
+            print(f"  Ошибка чтения {slug}: {e}")
+
+    read_log.write_text(json.dumps(sorted(read_ids)), encoding="utf-8")
+    if not messages:
+        print("Нет новых ответов.")
+    return messages
+
+
 def read_from_rest_api(unread_only: bool = False, channel: str = None):
     """Читаем сообщения от infolimp.ru через их REST API (не требует GitHub-токена)."""
     import urllib.request, urllib.error
@@ -260,16 +382,22 @@ if __name__ == "__main__":
         if args.git or not INFOLIMP_KEY:
             send_message(args.text, args.channel, args.type)
         else:
+            # Цепочка: REST messenger -> articles API -> git
             result = send_via_rest(args.text, args.channel, args.type)
             if result is None:
-                print("REST недоступен, пробуем Git-канал...")
+                result = send_via_articles(args.text, args.channel, args.type)
+            if result is None:
+                print("Articles API недоступен, пробуем Git-канал...")
                 send_message(args.text, args.channel, args.type)
     elif args.cmd == "read":
         if args.git or not INFOLIMP_KEY:
             read_messages(args.unread, args.channel)
         else:
+            # Цепочка: REST messenger -> scrape articles -> git
             msgs = read_from_rest_api(args.unread, args.channel)
-            if msgs is None:  # ошибка REST — fallback на Git
+            if msgs is None:
+                msgs = read_from_articles_scrape(args.unread)
+            if msgs is None:  # ошибка articles — fallback на Git
                 read_messages(args.unread, args.channel)
     else:
         parser.print_help()
