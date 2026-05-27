@@ -10,6 +10,7 @@
   python messenger.py read --unread
 """
 import os, sys, json, hmac, hashlib, uuid, subprocess
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -118,6 +119,8 @@ def read_messages(unread_only: bool = False, channel: str = None):
     messages = []
     for f in sorted(inbox_dir.glob("*.json")):
         env = json.loads(f.read_text(encoding="utf-8"))
+        if "id" not in env:
+            env["id"] = f.stem
         if unread_only and env["id"] in read_ids:
             continue
         if channel and env.get("channel") != channel:
@@ -127,8 +130,8 @@ def read_messages(unread_only: bool = False, channel: str = None):
         valid = verify(env, sig)
         env["signature"] = sig
 
-        status = "✓" if valid else "✗ ПОДПИСЬ НЕ СОВПАДАЕТ"
-        print(f"\n[{env['created_at'][:16]}] {env['from']} → {env['to']} "
+        status = "[OK]" if valid else "[!] ПОДПИСЬ НЕ СОВПАДАЕТ"
+        print(f"\n[{env['created_at'][:16]}] {env['from']} -> {env['to']} "
               f"[{env['channel']}] {status}")
         print(f"  {env['text']}")
         if env.get("payload"):
