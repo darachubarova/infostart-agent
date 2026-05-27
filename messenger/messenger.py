@@ -21,7 +21,9 @@ FROM_ID       = "infostart-agent"
 TO_ID         = "infolimp"
 INFOLIMP_API  = os.environ.get("INFOLIMP_API_URL", "https://infolimp.ru/api/articles")
 INFOLIMP_KEY  = os.environ.get("INFOLIMP_API_KEY", "")
-INBOX_API     = "https://infolimp.ru/api/messenger/inbox"
+MESSENGER_API = "https://infolimp.ru/api/messenger"
+INBOX_API     = f"{MESSENGER_API}/inbox"
+SEND_API      = f"{MESSENGER_API}/send"
 
 
 def _canon(payload: dict) -> str:
@@ -153,6 +155,52 @@ def read_messages(unread_only: bool = False, channel: str = None):
     return messages
 
 
+def send_via_rest(text: str, channel: str = "general", msg_type: str = "info",
+                  payload: dict = None):
+    """Отправить сообщение через REST API infolimp.ru (не требует GitHub-токена)."""
+    import urllib.request, urllib.error
+    if not INFOLIMP_KEY:
+        print("INFOLIMP_API_KEY не задан")
+        return None
+
+    ts   = datetime.now(timezone.utc).isoformat()
+    body = {
+        "from":       FROM_ID,
+        "to":         TO_ID,
+        "channel":    channel,
+        "type":       msg_type,
+        "text":       text,
+        "payload":    payload or {},
+        "created_at": ts,
+    }
+    body["signature"] = sign(body)
+
+    data = json.dumps(body, ensure_ascii=False).encode("utf-8")
+    req  = urllib.request.Request(
+        SEND_API,
+        data=data,
+        headers={
+            "Authorization": f"Bearer {INFOLIMP_KEY}",
+            "Content-Type":  "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read())
+            msg_id = result.get("id", "?")
+            print(f"Отправлено (REST): {msg_id}")
+            print(f"  Подпись: {body['signature'][:16]}...")
+            return msg_id
+    except urllib.error.HTTPError as e:
+        body_text = e.read().decode("utf-8", errors="replace")
+        print(f"Ошибка REST send: HTTP {e.code} — {body_text[:200]}")
+        return None
+    except Exception as e:
+        print(f"REST send недоступен: {e}")
+        return None
+
+
 def read_from_rest_api(unread_only: bool = False, channel: str = None):
     """Читаем сообщения от infolimp.ru через их REST API (не требует GitHub-токена)."""
     import urllib.request, urllib.error
@@ -182,10 +230,10 @@ def read_from_rest_api(unread_only: bool = False, channel: str = None):
             print("REST inbox ещё не готов на infolimp.ru — используем Git-канал.")
         else:
             print(f"Ошибка REST API: HTTP {e.code}")
-        return []
+        return None  # None = ошибка, [] = успешно пусто
     except Exception as e:
         print(f"REST API недоступен: {e}")
-        return []
+        return None
 
 
 if __name__ == "__main__":
@@ -197,21 +245,31 @@ if __name__ == "__main__":
     s.add_argument("text")
     s.add_argument("--channel", default="general")
     s.add_argument("--type",    default="info")
+    s.add_argument("--git",     action="store_true",
+                   help="Отправить через Git-канал (резервный)")
 
     r = sub.add_parser("read")
     r.add_argument("--unread",  action="store_true")
     r.add_argument("--channel", default=None)
-    r.add_argument("--rest",    action="store_true",
-                   help="Читать через REST API infolimp.ru (не требует GitHub-токена)")
+    r.add_argument("--git",     action="store_true",
+                   help="Читать через Git-канал (резервный)")
 
     args = parser.parse_args()
 
     if args.cmd == "send":
-        send_message(args.text, args.channel, args.type)
-    elif args.cmd == "read":
-        if args.rest:
-            read_from_rest_api(args.unread, args.channel)
+        if args.git or not INFOLIMP_KEY:
+            send_message(args.text, args.channel, args.type)
         else:
+            result = send_via_rest(args.text, args.channel, args.type)
+            if result is None:
+                print("REST недоступен, пробуем Git-канал...")
+                send_message(args.text, args.channel, args.type)
+    elif args.cmd == "read":
+        if args.git or not INFOLIMP_KEY:
             read_messages(args.unread, args.channel)
+        else:
+            msgs = read_from_rest_api(args.unread, args.channel)
+            if msgs is None:  # ошибка REST — fallback на Git
+                read_messages(args.unread, args.channel)
     else:
         parser.print_help()
