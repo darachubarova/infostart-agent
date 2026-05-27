@@ -20,15 +20,20 @@ FROM_ID     = "infostart-agent"
 TO_ID       = "infolimp"
 
 
-def sign(payload: dict) -> str:
-    """HMAC-SHA256 подпись тела сообщения."""
-    body = json.dumps(payload, sort_keys=True, ensure_ascii=False)
-    return hmac.new(SECRET_KEY, body.encode("utf-8"), hashlib.sha256).hexdigest()
+def _canon(payload: dict) -> str:
+    """Канонічна строка — стійка до JSON-переформатування."""
+    return "|".join([
+        payload.get("from",""), payload.get("to",""),
+        payload.get("channel",""), payload.get("type",""),
+        payload.get("text",""), payload.get("created_at",""),
+    ])
 
+def sign(payload: dict) -> str:
+    canon = _canon(payload)
+    return hmac.new(SECRET_KEY, canon.encode("utf-8"), hashlib.sha256).hexdigest()
 
 def verify(payload: dict, signature: str) -> bool:
-    expected = sign(payload)
-    return hmac.compare_digest(expected, signature)
+    return hmac.compare_digest(sign(payload), signature)
 
 
 def git(*args, cwd=LOCAL_REPO):
