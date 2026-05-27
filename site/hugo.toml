@@ -27,7 +27,7 @@ buildDrafts = false
 
 [[params.socialIcons]]
   name = "rss"
-  url = "/index.xml"
+  url = "https://darachubarova.github.io/infostart-agent/index.xml"
 
 [menu]
   [[menu.main]]
