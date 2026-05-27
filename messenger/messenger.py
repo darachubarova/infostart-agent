@@ -14,11 +14,14 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_URL    = "https://github.com/darachubarova/infolimp-comms.git"
-LOCAL_REPO  = Path("C:/Users/vitae/messenger-repo")
-SECRET_KEY  = os.environ.get("MESSENGER_HMAC_KEY", "").encode()
-FROM_ID     = "infostart-agent"
-TO_ID       = "infolimp"
+REPO_URL      = "https://github.com/darachubarova/infolimp-comms.git"
+LOCAL_REPO    = Path("C:/Users/vitae/messenger-repo")
+SECRET_KEY    = os.environ.get("MESSENGER_HMAC_KEY", "").encode()
+FROM_ID       = "infostart-agent"
+TO_ID         = "infolimp"
+INFOLIMP_API  = os.environ.get("INFOLIMP_API_URL", "https://infolimp.ru/api/articles")
+INFOLIMP_KEY  = os.environ.get("INFOLIMP_API_KEY", "")
+INBOX_API     = "https://infolimp.ru/api/messenger/inbox"
 
 
 def _canon(payload: dict) -> str:
@@ -150,6 +153,41 @@ def read_messages(unread_only: bool = False, channel: str = None):
     return messages
 
 
+def read_from_rest_api(unread_only: bool = False, channel: str = None):
+    """Читаем сообщения от infolimp.ru через их REST API (не требует GitHub-токена)."""
+    import urllib.request, urllib.error
+    params = f"?to={FROM_ID}&unread={'true' if unread_only else 'false'}"
+    if channel:
+        params += f"&channel={channel}"
+    req = urllib.request.Request(
+        INBOX_API + params,
+        headers={"Authorization": f"Bearer {INFOLIMP_KEY}"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            messages = json.loads(resp.read())
+            if not messages:
+                print("Нет новых сообщений от infolimp.ru.")
+                return []
+            for msg in messages:
+                sig = msg.pop("signature", "")
+                valid = verify(msg, sig) if sig else False
+                msg["signature"] = sig
+                status = "[OK]" if valid else "[!] ПОДПИСЬ НЕ СОВПАДАЕТ"
+                print(f"\n[{msg.get('created_at','?')[:16]}] {msg.get('from')} -> {msg.get('to')} [{msg.get('channel')}] {status}")
+                print(f"  {msg.get('text','')}")
+            return messages
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            print("REST inbox ещё не готов на infolimp.ru — используем Git-канал.")
+        else:
+            print(f"Ошибка REST API: HTTP {e.code}")
+        return []
+    except Exception as e:
+        print(f"REST API недоступен: {e}")
+        return []
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
@@ -163,12 +201,17 @@ if __name__ == "__main__":
     r = sub.add_parser("read")
     r.add_argument("--unread",  action="store_true")
     r.add_argument("--channel", default=None)
+    r.add_argument("--rest",    action="store_true",
+                   help="Читать через REST API infolimp.ru (не требует GitHub-токена)")
 
     args = parser.parse_args()
 
     if args.cmd == "send":
         send_message(args.text, args.channel, args.type)
     elif args.cmd == "read":
-        read_messages(args.unread, args.channel)
+        if args.rest:
+            read_from_rest_api(args.unread, args.channel)
+        else:
+            read_messages(args.unread, args.channel)
     else:
         parser.print_help()
