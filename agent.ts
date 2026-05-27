@@ -78,12 +78,18 @@ const prompt = MODE === "forum"
 import { mkdirSync } from "fs";
 try { mkdirSync("articles", { recursive: true }); } catch {}
 
+// Forum → Haiku (дешевле, техника), Trends → Sonnet (нужен голос)
+const model = MODE === "forum"
+  ? "claude-haiku-4-5-20251001"
+  : "claude-sonnet-4-6";
+
 for await (const message of query({
   prompt,
   options: {
     allowedTools: ["WebFetch", "Write", "Read", "Bash"],
     permissionMode: "acceptEdits",
     maxTurns: 40,
+    model,
   },
 })) {
   if (message.type === "assistant" && message.message?.content) {
